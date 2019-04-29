@@ -148,7 +148,10 @@ for i in range(0,100):
 print(Y)
 '''
 
-x_w1 = tf.matmul(x, w1)
+x_w1 = tf.matmul(x, w1) 
+print(x_w1)
+x_w1 = tf.sigmoid(x_w1)
+print(x_w1)
 y = tf.matmul(x_w1, w2)
 #w2_w3 = tf.matmul(w1_w2, w3)
 #y = tf.matmul(w2_w3, w4)

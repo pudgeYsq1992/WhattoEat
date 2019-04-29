@@ -131,8 +131,8 @@ with tf.Session() as sess:
 
     
 x_w1 = tf.matmul(x, w1)
-y = tf.matmul(x_w1, w2)
-#w2_w3 = tf.matmul(w1_w2, w3)
+w1_w2 = tf.matmul(x_w1, w2)
+w2_w3 = tf.matmul(w1_w2, w3)
 #y = tf.matmul(w2_w3, w4)
 
 y = tf.sigmoid(y)
