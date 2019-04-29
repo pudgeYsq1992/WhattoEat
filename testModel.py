@@ -115,8 +115,8 @@ for i in range(0,99):
 
 #print(TestX)
 
-w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,10],stddev = 1))			 
-w2 = tf.Variable(tf.random_normal([10,1],stddev = 1))				 
+w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,6],stddev = 1))			 
+w2 = tf.Variable(tf.random_normal([6,1],stddev = 1))				 
 #w3 = tf.Variable(tf.random_normal([10,3],stddev = 1))				 
 #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
