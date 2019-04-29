@@ -151,7 +151,7 @@ print(Y)
 x_w1 = tf.matmul(x, w1) 
 print(x_w1)
 x_w1 = tf.sigmoid(x_w1)
-print(x_w1)
+
 y = tf.matmul(x_w1, w2)
 #w2_w3 = tf.matmul(w1_w2, w3)
 #y = tf.matmul(w2_w3, w4)
@@ -182,7 +182,7 @@ with tf.Session() as sess:
     sess.run(init_op)
     print("w1:")
     print(sess.run(w1))
-    STEPS = 500000
+    STEPS = 5000
     for i in range(STEPS): 
         start = (i * batch_size) % dataset_size
         end = min(start+batch_size, dataset_size)
