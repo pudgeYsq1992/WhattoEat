@@ -142,18 +142,20 @@ w2_w3 = tf.sigmoid(w2_w3)
 
 y = tf.matmul(w2_w3, w4)
 y = tf.sigmoid(y)
+
 writer = tf.summary.FileWriter("/path/to/log",tf.get_default_graph())
 writer.close()
+'''
 cross_entropy = -tf.reduce_mean(
     y_ * tf.log(tf.clip_by_value(y, 1e-10, 1.0))
     +(1-y)*tf.log(tf.clip_by_value(1-y, 1e-10,1.0)))
+'''
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels = y_, logits = y)
 train_step = tf.train.AdamOptimizer(0.000001).minimize(cross_entropy)
+
 
 batch_size = 2
 
-#训练过程可视化
-#writer = tf.summary.FileWriter("/path/to/log",tf.get_default_graph)
-#writer.close()
 
 saver = tf.train.Saver()
 
@@ -162,7 +164,7 @@ with tf.Session() as sess:
     init_op = tf.global_variables_initializer()
     #初始化变量
     sess.run(init_op)
-    STEPS = 5000
+    STEPS = 200000
  
     for i in range(STEPS): 
         start = (i * batch_size) % dataset_size
@@ -171,8 +173,8 @@ with tf.Session() as sess:
 
         if i % 10000 == 0:
             total_cross_entropy = sess.run(cross_entropy, feed_dict = {x:X,y_:Y})
-            print("After %d training step(s) ,cross entropy on all data is %g"%(i,total_cross_entropy))
-            
+            #print("After %d training step(s) ,cross entropy on all data is %g"%(i,total_cross_entropy))
+            print("After %d training step(s)"%(i))
     print("w1:")
     print(sess.run(w1))
     print("w2:")
@@ -187,5 +189,3 @@ with tf.Session() as sess:
     print(test_output)
     
     
-writer = tf.summary.FileWriter("/path/to/log",tf.get_default_graph())
-writer.close()
