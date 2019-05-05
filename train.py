@@ -16,57 +16,57 @@ def stringToNum(s):
     if s == '恶劣':
         return 0
     if s == '较差':
-        return 1
+        return 0
     if s == '较好':
-        return 2
+        return 1
     if s == '很好':
-        return 3    
+        return 1    
     if s == '很累':
         return 0
     if s == '有点累':
-        return 1
+        return 0
     if s == '不大累':
-        return 2
+        return 1
     if s == '很轻松':
-        return 3
+        return 1
     if s == '不好吃':
         return 0 
     if s == '一般般':
-        return 1
+        return 0
     if s == '还不错':
-        return 2
+        return 1
     if s == '很好吃':
-        return 3
+        return 1
     if s == '星期一':
         return 0    
     if s == '星期二':
-        return 1
+        return 0
     if s == '星期三':
-        return 2
+        return 0
     if s == '星期四':
-        return 3
+        return 0
     if s == '星期五':
-        return 4
+        return 1
     if s == '星期六':
-        return 5    
+        return 1    
     if s == '星期天':
-        return 6
+        return 1
     if s == '便宜':
         return 0
     if s == '还行':
-        return 1
+        return 0
     if s == '有点贵':
-        return 2    
+        return 1    
     if s == '很贵':
-        return 3
+        return 1
     if s == '很远':
         return 0
     if s == '有些远':
-        return 1
+        return 0
     if s == '不算远':
-        return 2    
+        return 1    
     if s == '很近':
-        return 3
+        return 1
     if s == '一点都不想去':
         return 0
     if s == '一点也不想去':
@@ -132,16 +132,16 @@ for i in range(0,100):
 print(Y)
 
 x_w1 = tf.matmul(x, w1) 
-x_w1 = tf.sigmoid(x_w1)
+x_w1 = tf.nn.relu(x_w1)
 
 w1_w2 = tf.matmul(x_w1, w2)
-w1_w2 = tf.sigmoid(w1_w2)
+w1_w2 = tf.nn.relu(w1_w2)
 
 w2_w3 = tf.matmul(w1_w2, w3)
-w2_w3 = tf.sigmoid(w2_w3)
+w2_w3 = tf.nn.relu(w2_w3)
 
 y = tf.matmul(w2_w3, w4)
-y = tf.sigmoid(y)
+y = tf.nn.relu(y)
 
 writer = tf.summary.FileWriter("/path/to/log",tf.get_default_graph())
 writer.close()
