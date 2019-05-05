@@ -94,11 +94,11 @@ workbook = xlrd.open_workbook("偏好数据/标注数据.xls")
 
 
 #构建 待训练模型
-INPUT_NODE_NUM = 6
-w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,6],stddev = 1))			 
-w2 = tf.Variable(tf.random_normal([6,7],stddev = 1))				 
-w3 = tf.Variable(tf.random_normal([7,7],stddev = 1))				 
-w4 = tf.Variable(tf.random_normal([7,1],stddev = 1))
+INPUT_NODE_NUM = 1
+w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,2],stddev = 1))			 
+w2 = tf.Variable(tf.random_normal([2,3],stddev = 1))				 
+w3 = tf.Variable(tf.random_normal([3,3],stddev = 1))				 
+w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
 biases = tf.Variable(tf.zeros([3]))
 
@@ -114,23 +114,38 @@ X = rdm.rand(dataset_size,INPUT_NODE_NUM)
 #读取数据写入数组
 #X为训练数据
 for i in range(0,100):
+    if (i%2 == 0):
+        X[i][0] = 1
+    else:
+        X[i][0] = 0
+    '''
     X[i][0] = stringToNum(workbook.sheets()[0].cell(i+2,1).value)
     X[i][1] = stringToNum(workbook.sheets()[0].cell(i+2,2).value)
     X[i][2] = stringToNum(workbook.sheets()[0].cell(i+2,3).value)
     X[i][3] = stringToNum(workbook.sheets()[0].cell(i+2,4).value)
     X[i][4] = stringToNum(workbook.sheets()[0].cell(i+2,5).value)
     X[i][5] = stringToNum(workbook.sheets()[0].cell(i+2,6).value)
- 
+    '''
 print(X)
 #真实数据
 Y = []
-#为使用交叉熵损失函数,将原数据处理为1和0
+for i in range(0,100):
+    temp = []
+    if X[i][0] >0:
+        temp.append(1)
+        Y.append(temp)
+    else :
+        temp.append(1)
+        Y.append(temp)
+print(Y)
+
+'''
 for i in range(0,100):
     temp = []
     temp.append(stringToNum(workbook.sheets()[0].cell(i+2,8).value))
     Y.append(temp)
 print(Y)
-
+'''
 x_w1 = tf.matmul(x, w1) 
 x_w1 = tf.nn.relu(x_w1)
 
@@ -151,7 +166,7 @@ cross_entropy = -tf.reduce_mean(
     +(1-y)*tf.log(tf.clip_by_value(1-y, 1e-10,1.0)))
 '''
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels = y_, logits = y)
-train_step = tf.train.AdamOptimizer(0.000001).minimize(cross_entropy)
+train_step = tf.train.AdamOptimizer(0.00001).minimize(cross_entropy)
 
 
 batch_size = 2
@@ -164,7 +179,7 @@ with tf.Session() as sess:
     init_op = tf.global_variables_initializer()
     #初始化变量
     sess.run(init_op)
-    STEPS = 200000
+    STEPS = 50000
  
     for i in range(STEPS): 
         start = (i * batch_size) % dataset_size
@@ -183,8 +198,13 @@ with tf.Session() as sess:
     print(sess.run(w3))
     
     saver.save(sess, os.path.join(MODEL_SAVE_PATH,MODEL_NAME))
-    test_output = sess.run(y,{x:X})
+    test_output = sess.run(y,{x:X[0:1]})
+    print("X[0:1] :")
+    print(X[0:1])
+    
+    print()
     #inferenced_y = np.argmax(test_output,1)
+    
     print("testoutput:")
     print(test_output)
     
