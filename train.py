@@ -192,14 +192,14 @@ with tf.Session() as sess:
     init_op = tf.global_variables_initializer()
     #初始化变量
     sess.run(init_op)
-    STEPS = 1000000
+    STEPS = 100000
  
     for i in range(STEPS): 
         start = (i * batch_size) % dataset_size
         end = min(start+batch_size, dataset_size)
         sess.run(train_step,feed_dict = {x:X[start:end],y_:Y[start:end]})
 
-        if i % 100000 == 0:
+        if i % 10000 == 0:
             total_cross_entropy = sess.run(cross_entropy, feed_dict = {x:X,y_:Y})
             print("After %d training step(s) ,cross entropy on all data is %g"%(i,total_cross_entropy))
             #print("After %d training step(s)"%(i))
@@ -220,4 +220,16 @@ with tf.Session() as sess:
     print("testoutput:")
     print(test_output)
     
+    rdm = RandomState(1)
+    dataset_size = 1
+    XX = rdm.rand(dataset_size,INPUT_NODE_NUM)
+    XX[0][0] = 0
+    XX[0][1] = 0
+    XX[0][2] = 1
+    XX[0][3] = 1
+    XX[0][4] = 1
+    XX[0][5] = 1
+    test_output1 = sess.run(y,feed_dict ={x:XX})
+    print("testoutput1:")
+    print(test_output1)
     
