@@ -219,7 +219,7 @@ with tf.Session() as sess:
     
     print("testoutput:")
     print(test_output)
-    
+    '''
     rdm = RandomState(1)
     dataset_size = 1
     XX = rdm.rand(dataset_size,INPUT_NODE_NUM)
@@ -232,4 +232,4 @@ with tf.Session() as sess:
     test_output1 = sess.run(y,feed_dict ={x:XX})
     print("testoutput1:")
     print(test_output1)
-    
+    '''

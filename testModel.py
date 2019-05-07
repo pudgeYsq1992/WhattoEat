@@ -115,9 +115,9 @@ for i in range(0,99):
 
 #print(TestX)
 
-w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,6],stddev = 1))			 
-w2 = tf.Variable(tf.random_normal([6,1],stddev = 1))				 
-#w3 = tf.Variable(tf.random_normal([10,3],stddev = 1))				 
+w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))			 
+w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))				 
+w3 = tf.Variable(tf.random_normal([16,1],stddev = 1))				 
 #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
 saver = tf.train.Saver() # 声明tf.train.Saver类用于保存模型
@@ -131,8 +131,10 @@ with tf.Session() as sess:
 
     
 x_w1 = tf.matmul(x, w1)
+x_w1 = tf.sigmoid(x_w1)
 w1_w2 = tf.matmul(x_w1, w2)
-w2_w3 = tf.matmul(w1_w2, w3)
+w1_w2 = tf.sigmoid(w1_w2)
+y = tf.matmul(w1_w2, w3)
 #y = tf.matmul(w2_w3, w4)
 
 y = tf.sigmoid(y)
@@ -166,6 +168,19 @@ with tf.Session() as sess:
     a = real_output - predict_outputInt
     count = 0
     for i in range(0,99):
-        if sess.run(a[i]) == 0:
+        if sess.run(a[i]) <= 0.5:
             count = count +1
     print(count/100)
+
+    rdm = RandomState(1)
+    dataset_size = 1
+    XX = rdm.rand(dataset_size,INPUT_NODE_NUM)
+    XX[0][0] = 3
+    XX[0][1] = 1
+    XX[0][2] = 1
+    XX[0][3] = 1
+    XX[0][4] = 1
+    XX[0][5] = 3
+    test_output1 = sess.run(y,feed_dict ={x:XX})
+    print("testoutput1:")
+    print(test_output1)
