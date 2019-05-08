@@ -89,13 +89,13 @@ x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
 y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
 
 rdm = RandomState(1)
-dataset_size = 100
+dataset_size = 101
 
 
 #真实数据
 real_output = []
 #为使用交叉熵损失函数,将原数据处理为1和0
-for i in range(0,100):
+for i in range(0,101):
     temp = []
     temp.append(stringToNum(workbook.sheets()[0].cell(i+2,8).value))
     real_output.append(temp)
@@ -105,7 +105,7 @@ print(real_output)
 #测试数据
 TestX = rdm.rand(dataset_size,INPUT_NODE_NUM)
 
-for i in range(0,100):
+for i in range(0,101):
     TestX[i][0] = stringToNum(workbook.sheets()[0].cell(i+2,1).value)
     TestX[i][1] = stringToNum(workbook.sheets()[0].cell(i+2,2).value)
     TestX[i][2] = stringToNum(workbook.sheets()[0].cell(i+2,3).value)
@@ -121,13 +121,6 @@ w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))
 #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
 saver = tf.train.Saver() # 声明tf.train.Saver类用于保存模型
-'''
-with tf.Session() as sess:
-    saver.restore(sess, "/model/model.ckpt")
-    print(sess.run(w1))
-'''
-
-
 
     
 x_w1 = tf.matmul(x, w1)
@@ -147,15 +140,6 @@ with tf.Session() as sess:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         pass    
-    #print(sess.run(w1))
-    #print(sess.run(w2))
-    #print(sess.run(w3))
-    '''
-    for n in range(0,2):
-        for i in range(0,1):
-            for j in range(0,2):
-                TestX[i][j] = data[i+n][j]
-    '''
 
     predict_output = sess.run(y,{x:TestX})
     predict_outputInt = tf.round(predict_output)
@@ -164,24 +148,4 @@ with tf.Session() as sess:
     print("test_output:")
     print(predict_output)
     print(sess.run(predict_outputInt))
-    '''
-    a = real_output - predict_outputInt
-    count = 0
-    for i in range(0,99):
-        if sess.run(a[i]) <= 0.5:
-            count = count +1
-    print(count/100)
-
-    rdm = RandomState(1)
-    dataset_size = 1
-    XX = rdm.rand(dataset_size,INPUT_NODE_NUM)
-    XX[0][0] = 3
-    XX[0][1] = 1
-    XX[0][2] = 1
-    XX[0][3] = 1
-    XX[0][4] = 1
-    XX[0][5] = 3
-    test_output1 = sess.run(y,feed_dict ={x:XX})
-    print("testoutput1:")
-    print(test_output1)
-    '''
+    
