@@ -72,13 +72,13 @@ def stringToNum(s):
     if s == '一点也不想去':
         return 0
     if s == '不大想去':
-        return 0
+        return 1
     if s == '随缘吧':
-        return 1    
+        return 2    
     if s == '很想去':
-        return 1
+        return 3
     if s == '非去不可':
-        return 1
+        return 4
 
 #模型存储路径及名称
 MODEL_SAVE_PATH = "model/"
@@ -97,14 +97,14 @@ workbook = xlrd.open_workbook("偏好数据/标注数据.xls")
 INPUT_NODE_NUM = 6
 w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))			 
 w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))				 
-w3 = tf.Variable(tf.random_normal([16,1],stddev = 1))				 
+w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))				 
 w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
 biases = tf.Variable(tf.zeros([2]))
 biases2 = tf.Variable(tf.zeros([3]))
 #模型的输入输出
 x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
-y_ = tf.placeholder(tf.float32, shape = (None, 1), name = 'y-input')
+y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
 
 #使用随机数填满数组
 rdm = RandomState(1)
@@ -149,7 +149,37 @@ print(Y)
 '''
 for i in range(0,100):
     temp = []
-    temp.append(stringToNum(workbook.sheets()[0].cell(i+2,8).value))
+    label = stringToNum(workbook.sheets()[0].cell(i+2,8).value)
+    if label == 0:
+        temp.append(1)
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+    if label == 1:
+        temp.append(0)
+        temp.append(1)
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+    if label == 2:
+        temp.append(0)
+        temp.append(0)
+        temp.append(1)
+        temp.append(0)
+        temp.append(0)
+    if label == 3:
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+        temp.append(1)
+        temp.append(0)
+    if label == 4:
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+        temp.append(0)
+        temp.append(1)
     Y.append(temp)
 print(Y)
 
@@ -192,7 +222,7 @@ with tf.Session() as sess:
     init_op = tf.global_variables_initializer()
     #初始化变量
     sess.run(init_op)
-    STEPS = 100000
+    STEPS = 1000000
  
     for i in range(STEPS): 
         start = (i * batch_size) % dataset_size

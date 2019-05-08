@@ -86,16 +86,16 @@ workbook = xlrd.open_workbook("偏好数据/标注数据.xls")
 
 
 x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
-y_ = tf.placeholder(tf.float32, shape = (None, 1), name = 'y-input')
+y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
 
 rdm = RandomState(1)
-dataset_size = 99
+dataset_size = 100
 
 
 #真实数据
 real_output = []
 #为使用交叉熵损失函数,将原数据处理为1和0
-for i in range(0,99):
+for i in range(0,100):
     temp = []
     temp.append(stringToNum(workbook.sheets()[0].cell(i+2,8).value))
     real_output.append(temp)
@@ -105,7 +105,7 @@ print(real_output)
 #测试数据
 TestX = rdm.rand(dataset_size,INPUT_NODE_NUM)
 
-for i in range(0,99):
+for i in range(0,100):
     TestX[i][0] = stringToNum(workbook.sheets()[0].cell(i+2,1).value)
     TestX[i][1] = stringToNum(workbook.sheets()[0].cell(i+2,2).value)
     TestX[i][2] = stringToNum(workbook.sheets()[0].cell(i+2,3).value)
@@ -117,7 +117,7 @@ for i in range(0,99):
 
 w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))			 
 w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))				 
-w3 = tf.Variable(tf.random_normal([16,1],stddev = 1))				 
+w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))				 
 #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
 saver = tf.train.Saver() # 声明tf.train.Saver类用于保存模型
@@ -164,7 +164,7 @@ with tf.Session() as sess:
     print("test_output:")
     print(predict_output)
     print(sess.run(predict_outputInt))
-       
+    '''
     a = real_output - predict_outputInt
     count = 0
     for i in range(0,99):
@@ -184,3 +184,4 @@ with tf.Session() as sess:
     test_output1 = sess.run(y,feed_dict ={x:XX})
     print("testoutput1:")
     print(test_output1)
+    '''
