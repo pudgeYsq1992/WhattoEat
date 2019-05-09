@@ -91,7 +91,7 @@ y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
 rdm = RandomState(1)
 dataset_size = 101
 
-
+'''
 #真实数据
 real_output = []
 #为使用交叉熵损失函数,将原数据处理为1和0
@@ -101,11 +101,11 @@ for i in range(0,101):
     real_output.append(temp)
 print("real_output:")
 print(real_output)
-
+'''
 #测试数据
-TestX = rdm.rand(dataset_size,INPUT_NODE_NUM)
+TestX = rdm.rand(1,INPUT_NODE_NUM)
 
-for i in range(0,101):
+for i in range(0,1):
     TestX[i][0] = stringToNum(workbook.sheets()[0].cell(i+2,1).value)
     TestX[i][1] = stringToNum(workbook.sheets()[0].cell(i+2,2).value)
     TestX[i][2] = stringToNum(workbook.sheets()[0].cell(i+2,3).value)
@@ -120,8 +120,7 @@ w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))
 w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))				 
 #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
 
-saver = tf.train.Saver() # 声明tf.train.Saver类用于保存模型
-
+saver = tf.train.Saver() 
     
 x_w1 = tf.matmul(x, w1)
 x_w1 = tf.sigmoid(x_w1)
@@ -132,7 +131,20 @@ y = tf.matmul(w1_w2, w3)
 
 y = tf.sigmoid(y)
    
+def outputByChinese(outputArray,sess):
+    if sess.run(predict_outputInt)[0][0] == 1:
+        print("你恐怕是一点也不想去这家店。。。")
+    if sess.run(predict_outputInt)[0][1] == 1:
+        print("你应该不大想去吧")
+    if sess.run(predict_outputInt)[0][2] == 1:
+        print("多半是随缘了，有人拉你也就去了")
+    if sess.run(predict_outputInt)[0][3] == 1:
+        print("你应该很想去这家店吧")
+    if sess.run(predict_outputInt)[0][4] == 1:
+        print("你非去不可，拦都拦不住")
+   
 #测试会话开始
+InputX = rdm.rand(1,INPUT_NODE_NUM)
 with tf.Session() as sess:
     #读取模型
     ckpt = tf.train.get_checkpoint_state(MODEL_SAVE_PATH)
@@ -140,12 +152,29 @@ with tf.Session() as sess:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         pass    
-
-    predict_output = sess.run(y,{x:TestX})
+    print("核心模型加载完毕")
+    print("请告诉我今天的情况")
+    print("输入数字即可")
+    '''
+    InputX[0][0] = stringToNum(input("今天天气怎么样？(0.恶劣 1.较差 2.较好 3.很好)"))
+    InputX[0][1] = stringToNum(input("早上累不累？(0.很累 1.有点累 2.不大累 3.很轻松)"))
+    InputX[0][2] = stringToNum(input("今天周几？(0.星期一 1.星期二 2.星期三 3.星期四 4.星期五 5.星期六 6.星期天)"))
+    InputX[0][3] = stringToNum(input("这家店口味怎么样？(0.不好吃 1.一般般 2.还不错 3.很好吃)"))
+    InputX[0][4] = stringToNum(input("这家店菜价怎么样？(0.便宜 1.还行 2.有点贵 3.很贵)"))
+    InputX[0][5] = stringToNum(input("这家店离公司远吗？(0.很远 1.有些远 2.不算远 3很近.)"))
+    '''
+    InputX[0][0] = input("今天天气怎么样？(0.恶劣 1.较差 2.较好 3.很好)")
+    InputX[0][1] = input("早上累不累？(0.很累 1.有点累 2.不大累 3.很轻松)")
+    InputX[0][2] = input("今天周几？(0.星期一 1.星期二 2.星期三 3.星期四 4.星期五 5.星期六 6.星期天)")
+    InputX[0][3] = input("这家店口味怎么样？(0.不好吃 1.一般般 2.还不错 3.很好吃)")
+    InputX[0][4] = input("这家店菜价怎么样？(0.便宜 1.还行 2.有点贵 3.很贵)")
+    InputX[0][5] = input("这家店离公司远吗？(0.很远 1.有些远 2.不算远 3很近.)")
+    predict_output = sess.run(y,{x:InputX})
     predict_outputInt = tf.round(predict_output)
-    print("real_output")
-    print(real_output)
-    print("test_output:")
-    print(predict_output)
-    print(sess.run(predict_outputInt))
+    #predict_output = sess.run(y,{x:TestX})
+    #predict_outputInt = tf.round(predict_output)
+    #print("test_output:")
+    #print(sess.run(predict_outputInt))
+    #print(sess.run(predict_outputInt)[0][0])
+    outputByChinese(predict_outputInt,sess)
     
