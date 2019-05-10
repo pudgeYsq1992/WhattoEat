@@ -10,13 +10,19 @@ import os
 import tensorflow as tf
 from numpy.random import RandomState
 import numpy as np
-
+import operator
+import string
+'''
 MODEL_SAVE_PATH = "model/"
 MODEL_NAME = "model.ckpt"
 INPUT_NODE_NUM = 6
 
 x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
 y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
+
+rdm = RandomState(1)
+dataset_size = 101
+
 w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))			 
 w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))				 
 w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))				 
@@ -28,31 +34,64 @@ w1_w2 = tf.matmul(x_w1, w2)
 w1_w2 = tf.sigmoid(w1_w2)
 y = tf.matmul(w1_w2, w3)
 y = tf.sigmoid(y)
-
+'''
 def outputByChinese(outputArray,sess):
-    if sess.run(predict_outputInt)[0][0] == 1:
-        resultStr = "你恐怕是一点也不想去这家店。。。"
-    if sess.run(predict_outputInt)[0][1] == 1:
-        resultStr = "你应该不大想去吧"
-    if sess.run(predict_outputInt)[0][2] == 1:
-        resultStr = "多半是随缘了，有人拉你也就去了"
-    if sess.run(predict_outputInt)[0][3] == 1:
-        resultStr = "你应该很想去这家店吧"
-    if sess.run(predict_outputInt)[0][4] == 1:
-        resultStr = "你非去不可，拦都拦不住"
+    if sess.run(outputArray)[0][0] == 1:
+        return 0
+    if sess.run(outputArray)[0][1] == 1:
+        return 1        
+    if sess.run(outputArray)[0][2] == 1:
+        return 2        
+    if sess.run(outputArray)[0][3] == 1:
+        return 3        
+    if sess.run(outputArray)[0][4] == 1:
+        return 4        
 
 app = Flask(__name__)
 #@app.route('/api/hello', methods=['GET'])
 @app.route('/', methods=['GET'])
 def start():
-    return json.dumps({
-        'Well come to Yans party': 'Hello DingMingjie and ChenCheng'
-    })
+    return json.dumps(
+        'Welcome my friends, use URL to play with my AI.try this:http://47.101.152.193/000000.Encode your URL last six number as follow. weather(0-3)(very bad -> very good),fatigue degree(0-3)(very tired -> very relaxed),weekday(0-6),taste(0-3)(bad->good),price(0-3)(cheap->expensive),distance(0-3)(far away->close), So AI could Guess whether you like to go to that place for lunch'
+    )
 
 
 @app.route('/<strD>',methods=['GET'])
 def create_app(strD):
+    MODEL_SAVE_PATH = "model/"
+    MODEL_NAME = "model.ckpt"
+    INPUT_NODE_NUM = 6
+    
+    x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
+    y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
+
+    rdm = RandomState(1)
+    dataset_size = 101
+
+    w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))                       
+    w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))                           
+    w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))                            
+    #w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
+    saver = tf.train.Saver() 
+    x_w1 = tf.matmul(x, w1)
+    x_w1 = tf.sigmoid(x_w1)
+    w1_w2 = tf.matmul(x_w1, w2)
+    w1_w2 = tf.sigmoid(w1_w2)
+    y = tf.matmul(w1_w2, w3)
+    y = tf.sigmoid(y)
+
     InputX = rdm.rand(1,INPUT_NODE_NUM)
+    if len(strD) != 6:
+        return json.dumps(
+            'em...try to keep it in 6 numbers'
+        )
+    if strD.isdigit():
+        pass
+    else:
+        return json.dumps(
+            'please use int number'
+        )
+
     with tf.Session() as sess:
     #读取模型
         ckpt = tf.train.get_checkpoint_state(MODEL_SAVE_PATH)
@@ -68,29 +107,36 @@ def create_app(strD):
         InputX[0][5] = strD[5]   
         predict_output = sess.run(y,{x:InputX})
         predict_outputInt = tf.round(predict_output)
-        output_string = outputByChinese(predict_outputInt,sess)
-    '''
-    if strD == 'CC':
-        return json.dumps({
-            'Nice try': 'Hello,CC'
-        })
-    if strD == 'huhao':
-        return json.dumps({
-            'hello':'xiao biao fu'
-        })
-    if strD == 'Dingmingjie':
-        return json.dumps({
-            'Nice try':'Dingding'
-        })
-    if strD == '000000':
-        return json.dumps({
-            'This is good':'hello'
-        })
-    '''
-    return json.dumps({
-        'hello': output_string
-    })
+        output_num = outputByChinese(predict_outputInt,sess)
+   
+    if output_num == 0:
+        return json.dumps(
+            'You don\'t want to go to this place '
+        )
+    if output_num == 1:
+        return json.dumps(
+            'well,you don\'t like there'
+        )
 
+    if output_num == 2:
+        return json.dumps(
+            'Just so so, you will go if some one ask you'
+        )
+
+    if output_num == 3:
+        return json.dumps(
+            'You want to be there very much'
+        )
+
+    if output_num == 4:
+        return json.dumps(
+            'You will be there at any cost'
+        )
+
+    return json.dumps(
+         'ok,something wrong with URL'
+    )
+   
 
 @app.route('/signin' , methods=['GET'])
 def signin():
