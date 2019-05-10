@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 from flask import redirect
 from flask import jsonify
+from flask import render_template
 import json
 
 #模型部分
@@ -12,29 +13,8 @@ from numpy.random import RandomState
 import numpy as np
 import operator
 import string
-'''
-MODEL_SAVE_PATH = "model/"
-MODEL_NAME = "model.ckpt"
-INPUT_NODE_NUM = 6
 
-x = tf.placeholder(tf.float32, shape = (None,INPUT_NODE_NUM), name = 'x-input')
-y_ = tf.placeholder(tf.float32, shape = (None, 5), name = 'y-input')
 
-rdm = RandomState(1)
-dataset_size = 101
-
-w1 = tf.Variable(tf.random_normal([INPUT_NODE_NUM,16],stddev = 1))			 
-w2 = tf.Variable(tf.random_normal([16,16],stddev = 1))				 
-w3 = tf.Variable(tf.random_normal([16,5],stddev = 1))				 
-#w4 = tf.Variable(tf.random_normal([3,1],stddev = 1))
-saver = tf.train.Saver() 
-x_w1 = tf.matmul(x, w1)
-x_w1 = tf.sigmoid(x_w1)
-w1_w2 = tf.matmul(x_w1, w2)
-w1_w2 = tf.sigmoid(w1_w2)
-y = tf.matmul(w1_w2, w3)
-y = tf.sigmoid(y)
-'''
 def outputByChinese(outputArray,sess):
     if sess.run(outputArray)[0][0] == 1:
         return 0
@@ -50,13 +30,17 @@ def outputByChinese(outputArray,sess):
 app = Flask(__name__)
 #@app.route('/api/hello', methods=['GET'])
 @app.route('/', methods=['GET'])
+def home():
+    return render_template("homepage.html")
+
+@app.route('/', methods=['POST'])
 def start():
     return json.dumps(
         'Welcome my friends, use URL to play with my AI.try this:http://47.101.152.193/000000.Encode your URL last six number as follow. weather(0-3)(very bad -> very good),fatigue degree(0-3)(very tired -> very relaxed),weekday(0-6),taste(0-3)(bad->good),price(0-3)(cheap->expensive),distance(0-3)(far away->close), So AI could Guess whether you like to go to that place for lunch'
     )
 
 
-@app.route('/<strD>',methods=['GET'])
+@app.route('/<strD>',methods=['GET','POST'])
 def create_app(strD):
     MODEL_SAVE_PATH = "model/"
     MODEL_NAME = "model.ckpt"
