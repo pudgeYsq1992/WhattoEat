@@ -95,16 +95,16 @@ def create_app(strD):
    
     if output_num == 0:
         return json.dumps(
-            'You don\'t want to go to this place '
+            'You don\'t want to go to this place at all'
         )
     if output_num == 1:
         return json.dumps(
-            'well,you don\'t like there'
+            'well,you just don\'t like there'
         )
 
     if output_num == 2:
         return json.dumps(
-            'Just so so, you will go if some one ask you'
+            'Just so so, you will go if some one ask you to'
         )
 
     if output_num == 3:
