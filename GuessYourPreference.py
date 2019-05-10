@@ -1,4 +1,4 @@
-import h5py
+#coding=utf-8
 import os
 import tensorflow as tf
 from numpy.random import RandomState
