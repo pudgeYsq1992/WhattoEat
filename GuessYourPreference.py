@@ -168,7 +168,7 @@ with tf.Session() as sess:
     InputX[0][2] = input("今天周几？(0.星期一 1.星期二 2.星期三 3.星期四 4.星期五 5.星期六 6.星期天)")
     InputX[0][3] = input("这家店口味怎么样？(0.不好吃 1.一般般 2.还不错 3.很好吃)")
     InputX[0][4] = input("这家店菜价怎么样？(0.便宜 1.还行 2.有点贵 3.很贵)")
-    InputX[0][5] = input("这家店离公司远吗？(0.很远 1.有些远 2.不算远 3很近.)")
+    InputX[0][5] = input("这家店离公司远吗？(0.很远 1.有些远 2.不算远 3.很近.)")
     predict_output = sess.run(y,{x:InputX})
     predict_outputInt = tf.round(predict_output)
     #predict_output = sess.run(y,{x:TestX})
